@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>To-Do с памятью</title>
+
+  <style>
+    body {
+      background: #0f172a;
+      color: white;
+      font-family: Arial;
+      text-align: center;
+      padding-top: 60px;
+    }
+
+    input {
+      padding: 10px;
+      width: 200px;
+      border-radius: 8px;
+      border: none;
+    }
+
+    button {
+      padding: 10px 15px;
+      margin-left: 5px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .add {
+      background: #22c55e;
+      color: white;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 30px;
+    }
+
+    li {
+      background: #1e293b;
+      margin: 8px auto;
+      padding: 10px;
+      width: 250px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .delete {
+      background: red;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>To-Do с памятью</h1>
+
+  <input id="taskInput" placeholder="Новая задача">
+  <button class="add" onclick="addTask()">Добавить</button>
+
+  <ul id="list"></ul>
+
+  <script>
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+    function render() {
+      let list = document.getElementById("list");
+      list.innerHTML = "";
+
+      tasks.forEach((task, index) => {
+        let li = document.createElement("li");
+
+        li.innerHTML = task + 
+        ' <button class="delete" onclick="deleteTask(' + index + ')">X</button>';
+
+        list.appendChild(li);
+      });
+
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+
+    function addTask() {
+      let input = document.getElementById("taskInput");
+      if (input.value === "") return;
+
+      tasks.push(input.value);
+      input.value = "";
+
+      render();
+    }
+
+    function deleteTask(index) {
+      tasks.splice(index, 1);
+      render();
+    }
+
+    render();
+  </script>
+
+</body>
+</html>
