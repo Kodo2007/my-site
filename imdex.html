@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mini Market</title>
+
+  <style>
+    body {
+      background: #0f172a;
+      color: white;
+      font-family: Arial;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .grid {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 20px;
+      align-items: center;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 15px;
+      width: 250px;
+      border-radius: 10px;
+    }
+
+    button {
+      background: #22c55e;
+      border: none;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #16a34a;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>🛒 Mini Market</h1>
+  <p>Простой магазин на HTML</p>
+
+  <div class="grid">
+
+    <div class="card">
+      <h3>Футболка</h3>
+      <p>Цена: 5000₸</p>
+      <button onclick="buy('Футболка')">Купить</button>
+    </div>
+
+    <div class="card">
+      <h3>Кроссовки</h3>
+      <p>Цена: 15000₸</p>
+      <button onclick="buy('Кроссовки')">Купить</button>
+    </div>
+
+    <div class="card">
+      <h3>Кепка</h3>
+      <p>Цена: 3000₸</p>
+      <button onclick="buy('Кепка')">Купить</button>
+    </div>
+
+  </div>
+
+  <script>
+    function buy(item) {
+      alert("Ты выбрал: " + item + " 🛍️");
+    }
+  </script>
+
+</body>
+</html>
