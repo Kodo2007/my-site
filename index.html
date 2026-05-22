@@ -1,198 +1,243 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Mini Market</title>
+<meta charset="UTF-8">
+<title>Market Pro v4</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial;
-      background: #0b1220;
-      color: white;
-    }
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #0b1220;
+  color: white;
+}
 
-    header {
-      padding: 20px;
-      text-align: center;
-      background: #111a2e;
-      font-size: 22px;
-      font-weight: bold;
-    }
+header {
+  padding: 18px;
+  text-align: center;
+  background: #111a2e;
+  font-size: 22px;
+  font-weight: bold;
+}
 
-    .container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 15px;
-      padding: 20px;
-    }
+.top {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  position: sticky;
+  top: 0;
+  background: #0b1220;
+}
 
-    .card {
-      background: #151f36;
-      padding: 15px;
-      border-radius: 12px;
-    }
+input, select {
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+}
 
-    .price {
-      color: #22c55e;
-      margin: 5px 0 10px;
-    }
+input { flex: 1; }
 
-    button {
-      width: 100%;
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      background: #3b82f6;
-      color: white;
-      cursor: pointer;
-    }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+  padding: 15px;
+}
 
-    button:hover {
-      background: #2563eb;
-    }
+.card {
+  background: #151f36;
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+}
 
-    .cart-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #22c55e;
-      padding: 12px 15px;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: bold;
-    }
+img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+}
 
-    .panel {
-      position: fixed;
-      right: 0;
-      top: 0;
-      width: 280px;
-      height: 100%;
-      background: #0f172a;
-      padding: 15px;
-      display: none;
-      overflow-y: auto;
-    }
+.content {
+  padding: 10px;
+}
 
-    .item {
-      background: #1e293b;
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-    }
+.price {
+  color: #22c55e;
+  font-weight: bold;
+}
 
-    .remove {
-      margin-top: 5px;
-      background: red;
-      border: none;
-      color: white;
-      padding: 5px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
+button {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: 10px;
+  background: #6366f1;
+  color: white;
+  cursor: pointer;
+}
 
-    .buy {
-      margin-top: 10px;
-      background: #22c55e;
-    }
-  </style>
+.heart {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.5);
+  border: none;
+  color: white;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.cart {
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+  background: #22c55e;
+  padding: 12px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.panel {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 300px;
+  height: 100%;
+  background: #0f172a;
+  padding: 10px;
+  display: none;
+  overflow-y: auto;
+}
+
+.item {
+  background: #111a2e;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+}
+
+small {
+  color: #94a3b8;
+}
+</style>
 </head>
 
 <body>
 
-<header>🛒 Mini Market</header>
+<header>🛍 Market Pro v4</header>
 
-<div class="container">
+<div class="top">
+<input id="search" placeholder="Поиск..." oninput="render()">
 
-  <div class="card">
-    <h3>Футболка</h3>
-    <div class="price">5000₸</div>
-    <button onclick="add('Футболка', 5000)">Купить</button>
-  </div>
-
-  <div class="card">
-    <h3>Кроссовки</h3>
-    <div class="price">15000₸</div>
-    <button onclick="add('Кроссовки', 15000)">Купить</button>
-  </div>
-
-  <div class="card">
-    <h3>Кепка</h3>
-    <div class="price">3000₸</div>
-    <button onclick="add('Кепка', 3000)">Купить</button>
-  </div>
-
+<select id="cat" onchange="render()">
+  <option value="all">Все</option>
+  <option value="clothes">Одежда</option>
+  <option value="shoes">Обувь</option>
+  <option value="access">Аксессуары</option>
+</select>
 </div>
 
-<div class="cart-btn" onclick="toggle()">
-  🛒 Корзина (<span id="count">0</span>)
+<div class="grid" id="grid"></div>
+
+<div class="cart" onclick="toggleCart()">
+🛒 <span id="count">0</span> | ❤️ <span id="favCount">0</span>
 </div>
 
 <div class="panel" id="panel">
-  <h3>Корзина</h3>
-  <div id="list"></div>
-
-  <button class="buy" onclick="checkout()">
-    Оформить заказ
-  </button>
+<h3>Корзина</h3>
+<div id="list"></div>
 </div>
 
 <script>
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+const products = [
+  { name:"Футболка", price:5000, cat:"clothes", img:"https://picsum.photos/200?1" },
+  { name:"Худи", price:9000, cat:"clothes", img:"https://picsum.photos/200?2" },
+  { name:"Кроссовки", price:15000, cat:"shoes", img:"https://picsum.photos/200?3" },
+  { name:"Кепка", price:3000, cat:"access", img:"https://picsum.photos/200?4" }
+];
 
-  function save() {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let fav = JSON.parse(localStorage.getItem("fav")) || [];
 
-  function render() {
-    document.getElementById("count").innerText = cart.length;
+function save(){
+  localStorage.setItem("cart", JSON.stringify(cart));
+  localStorage.setItem("fav", JSON.stringify(fav));
+}
 
-    let list = document.getElementById("list");
-    list.innerHTML = "";
+function render(){
+  let grid = document.getElementById("grid");
+  let search = document.getElementById("search").value.toLowerCase();
+  let cat = document.getElementById("cat").value;
 
-    cart.forEach((item, index) => {
-      let div = document.createElement("div");
-      div.className = "item";
+  grid.innerHTML = "";
 
-      div.innerHTML = `
-        ${item.name} - ${item.price}₸
-        <button class="remove" onclick="removeItem(${index})">Удалить</button>
-      `;
+  products
+  .filter(p =>
+    p.name.toLowerCase().includes(search) &&
+    (cat === "all" || p.cat === cat)
+  )
+  .forEach((p,i)=>{
 
-      list.appendChild(div);
-    });
+    let isFav = fav.includes(i);
 
-    save();
-  }
+    let div = document.createElement("div");
+    div.className = "card";
 
-  function add(name, price) {
-    cart.push({ name, price });
-    render();
-  }
+    div.innerHTML = `
+      <button class="heart" onclick="toggleFav(${i})">
+        ${isFav ? "❤️" : "🤍"}
+      </button>
 
-  function removeItem(i) {
-    cart.splice(i, 1);
-    render();
-  }
+      <img src="${p.img}">
+      <div class="content">
+        <h4>${p.name}</h4>
+        <small>${p.cat}</small>
+        <div class="price">${p.price}₸</div>
+        <button onclick="add(${i})">В корзину</button>
+      </div>
+    `;
 
-  function toggle() {
-    let panel = document.getElementById("panel");
-    panel.style.display = panel.style.display === "block" ? "none" : "block";
-  }
+    grid.appendChild(div);
+  });
 
-  function checkout() {
-    if (cart.length === 0) {
-      alert("Корзина пустая");
-      return;
-    }
+  document.getElementById("count").innerText = cart.length;
+  document.getElementById("favCount").innerText = fav.length;
 
-    alert("Заказ оформлен (фейк) 🛒");
-    cart = [];
-    render();
-  }
+  let list = document.getElementById("list");
+  list.innerHTML = "";
 
+  cart.forEach((item,i)=>{
+    let div = document.createElement("div");
+    div.className = "item";
+    div.innerHTML = `${item.name} - ${item.price}₸`;
+    list.appendChild(div);
+  });
+
+  save();
+}
+
+function add(i){
+  cart.push(products[i]);
   render();
+}
+
+function toggleFav(i){
+  if(fav.includes(i)){
+    fav = fav.filter(x => x !== i);
+  } else {
+    fav.push(i);
+  }
+  render();
+}
+
+function toggleCart(){
+  let p = document.getElementById("panel");
+  p.style.display = p.style.display === "block" ? "none" : "block";
+}
+
+render();
 </script>
 
 </body>
