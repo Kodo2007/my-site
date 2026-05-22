@@ -2,12 +2,12 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Modern Market</title>
+  <title>Mini Market</title>
 
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: Arial;
       background: #0b1220;
       color: white;
     }
@@ -16,7 +16,7 @@
       padding: 20px;
       text-align: center;
       background: #111a2e;
-      font-size: 24px;
+      font-size: 22px;
       font-weight: bold;
     }
 
@@ -29,31 +29,20 @@
 
     .card {
       background: #151f36;
-      border-radius: 14px;
       padding: 15px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-      transition: 0.2s;
-    }
-
-    .card:hover {
-      transform: translateY(-5px);
-    }
-
-    .title {
-      font-size: 18px;
-      margin-bottom: 5px;
+      border-radius: 12px;
     }
 
     .price {
       color: #22c55e;
-      margin-bottom: 10px;
+      margin: 5px 0 10px;
     }
 
     button {
       width: 100%;
       padding: 10px;
       border: none;
-      border-radius: 10px;
+      border-radius: 8px;
       background: #3b82f6;
       color: white;
       cursor: pointer;
@@ -63,44 +52,38 @@
       background: #2563eb;
     }
 
-    .cart {
+    .cart-btn {
       position: fixed;
       bottom: 20px;
       right: 20px;
       background: #22c55e;
       padding: 12px 15px;
       border-radius: 12px;
-      font-weight: bold;
       cursor: pointer;
+      font-weight: bold;
     }
 
     .panel {
       position: fixed;
-      top: 0;
       right: 0;
-      width: 300px;
+      top: 0;
+      width: 280px;
       height: 100%;
       background: #0f172a;
       padding: 15px;
-      overflow-y: auto;
       display: none;
+      overflow-y: auto;
     }
 
     .item {
       background: #1e293b;
       padding: 10px;
       margin-bottom: 10px;
-      border-radius: 10px;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .checkout {
-      margin-top: 10px;
-      background: #22c55e;
+      border-radius: 8px;
     }
 
     .remove {
+      margin-top: 5px;
       background: red;
       border: none;
       color: white;
@@ -108,44 +91,49 @@
       border-radius: 6px;
       cursor: pointer;
     }
+
+    .buy {
+      margin-top: 10px;
+      background: #22c55e;
+    }
   </style>
 </head>
 
 <body>
 
-<header>🛒 Modern Market</header>
+<header>🛒 Mini Market</header>
 
 <div class="container">
 
   <div class="card">
-    <div class="title">Футболка</div>
-    <div class="price" data-price="5000">5000₸</div>
+    <h3>Футболка</h3>
+    <div class="price">5000₸</div>
     <button onclick="add('Футболка', 5000)">Купить</button>
   </div>
 
   <div class="card">
-    <div class="title">Кроссовки</div>
-    <div class="price" data-price="15000">15000₸</div>
+    <h3>Кроссовки</h3>
+    <div class="price">15000₸</div>
     <button onclick="add('Кроссовки', 15000)">Купить</button>
   </div>
 
   <div class="card">
-    <div class="title">Кепка</div>
-    <div class="price" data-price="3000">3000₸</div>
+    <h3>Кепка</h3>
+    <div class="price">3000₸</div>
     <button onclick="add('Кепка', 3000)">Купить</button>
   </div>
 
 </div>
 
-<div class="cart" onclick="toggleCart()">
-  🛒 Корзина: <span id="count">0</span> | <span id="total">0</span>₸
+<div class="cart-btn" onclick="toggle()">
+  🛒 Корзина (<span id="count">0</span>)
 </div>
 
 <div class="panel" id="panel">
   <h3>Корзина</h3>
   <div id="list"></div>
 
-  <button class="checkout" onclick="checkout()">
+  <button class="buy" onclick="checkout()">
     Оформить заказ
   </button>
 </div>
@@ -157,11 +145,8 @@
     localStorage.setItem("cart", JSON.stringify(cart));
   }
 
-  function update() {
+  function render() {
     document.getElementById("count").innerText = cart.length;
-
-    let total = cart.reduce((sum, i) => sum + i.price, 0);
-    document.getElementById("total").innerText = total;
 
     let list = document.getElementById("list");
     list.innerHTML = "";
@@ -172,7 +157,7 @@
 
       div.innerHTML = `
         ${item.name} - ${item.price}₸
-        <button class="remove" onclick="removeItem(${index})">X</button>
+        <button class="remove" onclick="removeItem(${index})">Удалить</button>
       `;
 
       list.appendChild(div);
@@ -183,15 +168,15 @@
 
   function add(name, price) {
     cart.push({ name, price });
-    update();
+    render();
   }
 
-  function removeItem(index) {
-    cart.splice(index, 1);
-    update();
+  function removeItem(i) {
+    cart.splice(i, 1);
+    render();
   }
 
-  function toggleCart() {
+  function toggle() {
     let panel = document.getElementById("panel");
     panel.style.display = panel.style.display === "block" ? "none" : "block";
   }
@@ -204,10 +189,10 @@
 
     alert("Заказ оформлен (фейк) 🛒");
     cart = [];
-    update();
+    render();
   }
 
-  update();
+  render();
 </script>
 
 </body>
