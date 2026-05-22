@@ -1,80 +1,214 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-  <title>Mini Market</title>
+  <meta charset="UTF-8">
+  <title>Modern Market</title>
 
   <style>
     body {
-      background: #0f172a;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b1220;
       color: white;
-      font-family: Arial;
+    }
+
+    header {
+      padding: 20px;
       text-align: center;
+      background: #111a2e;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
       padding: 20px;
     }
 
-    .grid {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      margin-top: 20px;
-      align-items: center;
+    .card {
+      background: #151f36;
+      border-radius: 14px;
+      padding: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      transition: 0.2s;
     }
 
-    .card {
-      background: #1e293b;
-      padding: 15px;
-      width: 250px;
-      border-radius: 10px;
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .title {
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+
+    .price {
+      color: #22c55e;
+      margin-bottom: 10px;
     }
 
     button {
-      background: #22c55e;
-      border: none;
+      width: 100%;
       padding: 10px;
-      margin-top: 10px;
-      border-radius: 8px;
+      border: none;
+      border-radius: 10px;
+      background: #3b82f6;
       color: white;
       cursor: pointer;
     }
 
     button:hover {
-      background: #16a34a;
+      background: #2563eb;
+    }
+
+    .cart {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #22c55e;
+      padding: 12px 15px;
+      border-radius: 12px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 300px;
+      height: 100%;
+      background: #0f172a;
+      padding: 15px;
+      overflow-y: auto;
+      display: none;
+    }
+
+    .item {
+      background: #1e293b;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .checkout {
+      margin-top: 10px;
+      background: #22c55e;
+    }
+
+    .remove {
+      background: red;
+      border: none;
+      color: white;
+      padding: 5px;
+      border-radius: 6px;
+      cursor: pointer;
     }
   </style>
 </head>
 
 <body>
 
-  <h1>🛒 Mini Market</h1>
-  <p>Простой магазин на HTML</p>
+<header>🛒 Modern Market</header>
 
-  <div class="grid">
+<div class="container">
 
-    <div class="card">
-      <h3>Футболка</h3>
-      <p>Цена: 5000₸</p>
-      <button onclick="buy('Футболка')">Купить</button>
-    </div>
-
-    <div class="card">
-      <h3>Кроссовки</h3>
-      <p>Цена: 15000₸</p>
-      <button onclick="buy('Кроссовки')">Купить</button>
-    </div>
-
-    <div class="card">
-      <h3>Кепка</h3>
-      <p>Цена: 3000₸</p>
-      <button onclick="buy('Кепка')">Купить</button>
-    </div>
-
+  <div class="card">
+    <div class="title">Футболка</div>
+    <div class="price" data-price="5000">5000₸</div>
+    <button onclick="add('Футболка', 5000)">Купить</button>
   </div>
 
-  <script>
-    function buy(item) {
-      alert("Ты выбрал: " + item + " 🛍️");
+  <div class="card">
+    <div class="title">Кроссовки</div>
+    <div class="price" data-price="15000">15000₸</div>
+    <button onclick="add('Кроссовки', 15000)">Купить</button>
+  </div>
+
+  <div class="card">
+    <div class="title">Кепка</div>
+    <div class="price" data-price="3000">3000₸</div>
+    <button onclick="add('Кепка', 3000)">Купить</button>
+  </div>
+
+</div>
+
+<div class="cart" onclick="toggleCart()">
+  🛒 Корзина: <span id="count">0</span> | <span id="total">0</span>₸
+</div>
+
+<div class="panel" id="panel">
+  <h3>Корзина</h3>
+  <div id="list"></div>
+
+  <button class="checkout" onclick="checkout()">
+    Оформить заказ
+  </button>
+</div>
+
+<script>
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  function save() {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }
+
+  function update() {
+    document.getElementById("count").innerText = cart.length;
+
+    let total = cart.reduce((sum, i) => sum + i.price, 0);
+    document.getElementById("total").innerText = total;
+
+    let list = document.getElementById("list");
+    list.innerHTML = "";
+
+    cart.forEach((item, index) => {
+      let div = document.createElement("div");
+      div.className = "item";
+
+      div.innerHTML = `
+        ${item.name} - ${item.price}₸
+        <button class="remove" onclick="removeItem(${index})">X</button>
+      `;
+
+      list.appendChild(div);
+    });
+
+    save();
+  }
+
+  function add(name, price) {
+    cart.push({ name, price });
+    update();
+  }
+
+  function removeItem(index) {
+    cart.splice(index, 1);
+    update();
+  }
+
+  function toggleCart() {
+    let panel = document.getElementById("panel");
+    panel.style.display = panel.style.display === "block" ? "none" : "block";
+  }
+
+  function checkout() {
+    if (cart.length === 0) {
+      alert("Корзина пустая");
+      return;
     }
-  </script>
+
+    alert("Заказ оформлен (фейк) 🛒");
+    cart = [];
+    update();
+  }
+
+  update();
+</script>
 
 </body>
 </html>
