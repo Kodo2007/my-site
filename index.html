@@ -2,195 +2,234 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Market v5</title>
+<title>Market vFinal</title>
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial;
-  background: #0b1220;
-  color: white;
+body{
+  margin:0;
+  font-family:Arial;
+  background:#f4f6fb;
+  color:#111;
 }
 
-header {
-  padding: 18px;
-  text-align: center;
-  background: #111a2e;
-  font-size: 20px;
-  font-weight: bold;
+/* HEADER */
+header{
+  background:#6d28d9;
+  color:white;
+  padding:14px;
+  text-align:center;
+  font-weight:bold;
 }
 
-/* СТРАНИЦЫ */
-.page {
-  display: none;
-  padding: 15px;
+/* TOP BAR */
+.top{
+  display:flex;
+  gap:10px;
+  padding:10px;
+  flex-wrap:wrap;
+  background:white;
 }
 
-.active {
-  display: block;
+input,select{
+  flex:1;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #ddd;
 }
 
-/* КАТАЛОГ */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 12px;
+/* GRID */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:12px;
+  padding:12px;
 }
 
-.card {
-  background: #151f36;
-  border-radius: 12px;
-  padding: 10px;
-  cursor: pointer;
+/* CARD */
+.card{
+  background:white;
+  border-radius:14px;
+  padding:10px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.08);
+  cursor:pointer;
 }
 
-/* ТОВАР */
-.product {
-  background: #151f36;
-  padding: 15px;
-  border-radius: 12px;
+.price{
+  color:#16a34a;
+  font-weight:bold;
 }
 
-button {
-  width: 100%;
-  padding: 10px;
-  border: none;
-  border-radius: 10px;
-  background: #6366f1;
-  color: white;
-  cursor: pointer;
-  margin-top: 10px;
+/* BUTTON */
+button{
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#6d28d9;
+  color:white;
+  margin-top:8px;
 }
 
-.nav {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  display: flex;
-}
+/* PAGE */
+.page{display:none;padding:12px;}
+.active{display:block;}
 
-.nav button {
-  border-radius: 0;
-  margin: 0;
+/* FLOAT */
+.floating{
+  position:fixed;
+  bottom:15px;
+  right:15px;
+  background:#111;
+  color:white;
+  padding:12px;
+  border-radius:12px;
 }
 </style>
 </head>
 
 <body>
 
-<header>🛍 Market v5</header>
+<header>🛍 Market vFinal</header>
 
-<!-- КАТАЛОГ -->
-<div id="catalog" class="page active"></div>
+<div class="top">
+<input id="search" placeholder="Поиск..." oninput="render()">
 
-<!-- ТОВАР -->
-<div id="productPage" class="page"></div>
+<select id="cat" onchange="render()">
+  <option value="all">Все</option>
+  <option value="clothes">Одежда</option>
+  <option value="shoes">Обувь</option>
+</select>
+</div>
 
-<!-- КОРЗИНА -->
-<div id="cartPage" class="page"></div>
+<!-- PAGES -->
+<div id="shop" class="page active"></div>
+<div id="product" class="page"></div>
+<div id="cart" class="page"></div>
+<div id="fav" class="page"></div>
 
-<!-- НАВИГАЦИЯ -->
-<div class="nav">
-  <button onclick="show('catalog')">Каталог</button>
-  <button onclick="show('cartPage')">Корзина</button>
+<div class="floating" onclick="show('cart')">
+🛒 <span id="count">0</span> | ⭐ <span id="favCount">0</span>
 </div>
 
 <script>
 
-const products = [
-  { id:1, name:"Футболка", price:5000, desc:"Хлопок 100%" },
-  { id:2, name:"Кроссовки", price:15000, desc:"Беговые" },
-  { id:3, name:"Кепка", price:3000, desc:"Летняя" }
+const products=[
+ {id:1,name:"Футболка",price:5000,cat:"clothes",desc:"Хлопок 100%"},
+ {id:2,name:"Кроссовки",price:15000,cat:"shoes",desc:"Nike беговые"},
+ {id:3,name:"Кепка",price:3000,cat:"clothes",desc:"Летняя"},
+ {id:4,name:"Худи",price:9000,cat:"clothes",desc:"Oversize"}
 ];
 
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
-let currentProduct = null;
+let cart=JSON.parse(localStorage.getItem("cart"))||[];
+let fav=JSON.parse(localStorage.getItem("fav"))||[];
+let current=null;
 
+/* SAVE */
 function save(){
-  localStorage.setItem("cart", JSON.stringify(cart));
+ localStorage.setItem("cart",JSON.stringify(cart));
+ localStorage.setItem("fav",JSON.stringify(fav));
 }
 
-/* НАВИГАЦИЯ */
+/* NAV */
 function show(page){
-  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-  document.getElementById(page).classList.add("active");
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ document.getElementById(page).classList.add("active");
 
-  if(page === "catalog") renderCatalog();
-  if(page === "cartPage") renderCart();
+ if(page==="shop")render();
+ if(page==="cart")renderCart();
+ if(page==="fav")renderFav();
 }
 
-/* КАТАЛОГ */
-function renderCatalog(){
-  let el = document.getElementById("catalog");
-  el.innerHTML = `<div class="grid">
-    ${products.map(p => `
-      <div class="card" onclick="openProduct(${p.id})">
-        <h4>${p.name}</h4>
-        <div>${p.price}₸</div>
-      </div>
-    `).join("")}
-  </div>`;
+/* SHOP */
+function render(){
+ let q=document.getElementById("search").value.toLowerCase();
+ let cat=document.getElementById("cat").value;
+
+ let list=products.filter(p=>
+  p.name.toLowerCase().includes(q) &&
+  (cat==="all"||p.cat===cat)
+ );
+
+ document.getElementById("shop").innerHTML=
+ `<div class="grid">
+ ${list.map(p=>`
+  <div class="card" onclick="openProduct(${p.id})">
+    <b>${p.name}</b>
+    <div class="price">${p.price}₸</div>
+  </div>
+ `).join("")}
+ </div>`;
+
+ updateUI();
 }
 
-/* ТОВАР */
+/* PRODUCT */
 function openProduct(id){
-  currentProduct = products.find(p => p.id === id);
+ current=products.find(p=>p.id===id);
 
-  let el = document.getElementById("productPage");
+ document.getElementById("product").innerHTML=`
+ <div class="card">
+  <h2>${current.name}</h2>
+  <p>${current.desc}</p>
+  <h3>${current.price}₸</h3>
 
-  el.innerHTML = `
-    <div class="product">
-      <h2>${currentProduct.name}</h2>
-      <p>${currentProduct.desc}</p>
-      <b>${currentProduct.price}₸</b>
+  <button onclick="add()">В корзину</button>
+  <button onclick="toggleFav()">⭐ Избранное</button>
+  <button onclick="show('shop')">Назад</button>
+ </div>`;
 
-      <button onclick="addToCart()">
-        В корзину
-      </button>
-
-      <button onclick="show('catalog')">
-        Назад
-      </button>
-    </div>
-  `;
-
-  show("productPage");
+ show('product');
 }
 
-/* КОРЗИНА */
+/* CART */
 function renderCart(){
-  let el = document.getElementById("cartPage");
-
-  let sum = cart.reduce((a,b)=>a+b.price,0);
-
-  el.innerHTML = `
-    <h3>Корзина</h3>
-
-    ${cart.map((c,i)=>`
-      <div class="card">
-        ${c.name} - ${c.price}₸
-        <button onclick="remove(${i})">Удалить</button>
-      </div>
-    `).join("")}
-
-    <h3>Итого: ${sum}₸</h3>
-  `;
+ document.getElementById("cart").innerHTML=`
+ <h3>Корзина</h3>
+ ${cart.map((c,i)=>`
+  <div class="card">
+   ${c.name} - ${c.price}₸
+   <button onclick="remove(${i})">Удалить</button>
+  </div>
+ `).join("")}
+ <h3>Итого: ${cart.reduce((a,b)=>a+b.price,0)}₸</h3>
+ `;
 }
 
-/* ЛОГИКА */
-function addToCart(){
-  cart.push(currentProduct);
-  save();
-  alert("Добавлено в корзину");
+/* FAV */
+function renderFav(){
+ document.getElementById("fav").innerHTML=`
+ <h3>Избранное</h3>
+ ${fav.map(f=>`
+  <div class="card">${f.name} - ${f.price}₸</div>
+ `).join("")}
+ `;
+}
+
+/* LOGIC */
+function add(){
+ cart.push(current);
+ save();updateUI();
 }
 
 function remove(i){
-  cart.splice(i,1);
-  save();
-  renderCart();
+ cart.splice(i,1);
+ save();renderCart();updateUI();
 }
 
-renderCatalog();
+function toggleFav(){
+ let i=fav.findIndex(f=>f.id===current.id);
+ if(i>=0)fav.splice(i,1);
+ else fav.push(current);
+ save();updateUI();
+}
+
+/* UI */
+function updateUI(){
+ document.getElementById("count").innerText=cart.length;
+ document.getElementById("favCount").innerText=fav.length;
+}
+
+render();
 
 </script>
 
