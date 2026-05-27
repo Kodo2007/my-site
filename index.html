@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Senet.CCD Text Tools</title>
+<title>Senet.CCD</title>
 
 <style>
 body{
@@ -13,9 +13,10 @@ body{
 }
 
 header{
-  padding:20px;
+  padding:18px;
   text-align:center;
   background:#111a2e;
+  font-size:20px;
   font-weight:bold;
 }
 
@@ -32,109 +33,100 @@ header{
   margin-bottom:12px;
 }
 
-textarea{
-  width:100%;
-  height:120px;
-  border-radius:10px;
-  border:none;
-  padding:10px;
-}
-
-button{
+input, button{
   width:100%;
   padding:10px;
   margin-top:8px;
   border:none;
   border-radius:10px;
-  background:#6d28d9;
-  color:white;
 }
 
-.pro{
-  border:1px solid #6d28d9;
+button{
+  background:#6d28d9;
+  color:white;
+  cursor:pointer;
 }
 </style>
 </head>
 
 <body>
 
-<header>Senet.CCD — Text Tools Pack</header>
+<header>Senet.CCD — Login System</header>
 
 <div class="container">
 
-  <!-- FREE TOOL -->
   <div class="card">
-    <h3>Text Formatter (FREE)</h3>
-    <textarea id="text"></textarea>
+    <h3>🔐 Register / Login</h3>
 
-    <button onclick="upper()">UPPERCASE</button>
-    <button onclick="lower()">lowercase</button>
-    <button onclick="count()">Word Count</button>
+    <input id="email" placeholder="Email">
+    <input id="pass" type="password" placeholder="Password">
 
-    <p id="result"></p>
+    <button onclick="register()">Register</button>
+    <button onclick="login()">Login</button>
+
+    <p id="status"></p>
   </div>
 
-  <!-- PRO SECTION -->
-  <div class="card pro">
-    <h3>🔓 PRO Tools</h3>
-    <p>Разблокируются после покупки</p>
-
-    <button onclick="buy()">Купить PRO (990₸)</button>
-  </div>
-
-  <div id="proTools" class="card" style="display:none;">
-    <h3>Paraphraser (PRO)</h3>
-    <button onclick="fakeRewrite()">Перефразировать</button>
-
-    <h3>Summarizer (PRO)</h3>
-    <button onclick="fakeSummary()">Сжать текст</button>
+  <div class="card" id="panel" style="display:none;">
+    <h3>👤 User Panel</h3>
+    <p id="user"></p>
+    <button onclick="logout()">Logout</button>
   </div>
 
 </div>
 
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
 <script>
+const firebaseConfig = {
+  apiKey: "PASTE_YOUR_KEY",
+  authDomain: "senetccd.firebaseapp.com",
+  projectId: "senetccd",
+  storageBucket: "senetccd.appspot.com",
+  messagingSenderId: "1060046810183",
+  appId: "PASTE_YOUR_APP_ID"
+};
 
-function getText(){
-  return document.getElementById("text").value;
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+/* REGISTER */
+function register(){
+  let email = document.getElementById("email").value;
+  let pass = document.getElementById("pass").value;
+
+  auth.createUserWithEmailAndPassword(email, pass)
+  .then(user=>{
+    document.getElementById("status").innerText = "Аккаунт создан";
+  })
+  .catch(e=>{
+    document.getElementById("status").innerText = e.message;
+  });
 }
 
-/* FREE */
-function upper(){
-  document.getElementById("text").value = getText().toUpperCase();
+/* LOGIN */
+function login(){
+  let email = document.getElementById("email").value;
+  let pass = document.getElementById("pass").value;
+
+  auth.signInWithEmailAndPassword(email, pass)
+  .then(user=>{
+    document.getElementById("status").innerText = "Вход выполнен";
+    document.getElementById("panel").style.display="block";
+    document.getElementById("user").innerText = user.user.email;
+  })
+  .catch(e=>{
+    document.getElementById("status").innerText = e.message;
+  });
 }
 
-function lower(){
-  document.getElementById("text").value = getText().toLowerCase();
+/* LOGOUT */
+function logout(){
+  auth.signOut();
+  document.getElementById("panel").style.display="none";
 }
-
-function count(){
-  let words = getText().trim().split(/\s+/).filter(Boolean).length;
-  document.getElementById("result").innerText = "Words: " + words;
-}
-
-/* BUY */
-function buy(){
-  alert("Оплата: Kaspi 990₸ → после оплаты включится PRO");
-  localStorage.setItem("pro","true");
-  document.getElementById("proTools").style.display="block";
-}
-
-/* PRO (симуляция) */
-function fakeRewrite(){
-  let t = getText();
-  document.getElementById("text").value = "✨ " + t.split(" ").reverse().join(" ");
-}
-
-function fakeSummary(){
-  let t = getText();
-  document.getElementById("text").value = t.split(" ").slice(0,5).join(" ") + "...";
-}
-
-/* AUTO UNLOCK */
-if(localStorage.getItem("pro")==="true"){
-  document.getElementById("proTools").style.display="block";
-}
-
 </script>
 
 </body>
