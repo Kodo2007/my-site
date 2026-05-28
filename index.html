@@ -2,12 +2,11 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>SenetCCD Admin</title>
+<title>SenetCCD</title>
 
 <style>
 body{
-  font-family: Arial;
+  font-family:Arial;
   background:#0b1220;
   color:white;
   margin:0;
@@ -70,11 +69,11 @@ button{
     <p id="userInfo"></p>
   </div>
 
-  <!-- ADMIN PANEL -->
+  <!-- ADMIN -->
   <div class="card" id="adminPanel" style="display:none;">
     <h2>🛠 Admin Panel</h2>
 
-    <input id="p_name" placeholder="Product name">
+    <input id="p_name" placeholder="Name">
     <input id="p_desc" placeholder="Description">
     <input id="p_price" placeholder="Price">
     <input id="p_img" placeholder="Image URL">
@@ -96,7 +95,7 @@ button{
 
 <script>
 
-/* 🔥 CONFIG */
+/* 🔥 FIREBASE CONFIG (вставь свой если нужно) */
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_PROJECT.firebaseapp.com",
@@ -111,7 +110,7 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-/* 👑 ТВОЙ EMAIL (АДМИН) */
+/* 👑 ADMIN EMAIL */
 const ADMIN_EMAIL = "imanalyzh@gmail.com";
 
 /* AUTH STATE */
@@ -141,7 +140,7 @@ function register(){
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  auth.createUserWithEmailAndPassword(email, password)
+  auth.createUserWithEmailAndPassword(email,password)
   .catch(e => alert(e.message));
 }
 
@@ -150,7 +149,7 @@ function login(){
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  auth.signInWithEmailAndPassword(email, password)
+  auth.signInWithEmailAndPassword(email,password)
   .catch(e => alert(e.message));
 }
 
@@ -162,19 +161,12 @@ function logout(){
 /* ADD PRODUCT */
 function addProduct(){
 
-  const name = document.getElementById("p_name").value;
-  const desc = document.getElementById("p_desc").value;
-  const price = document.getElementById("p_price").value;
-  const img = document.getElementById("p_img").value;
-
   db.collection("products").add({
-    name,
-    description: desc,
-    price,
-    image: img
+    name: document.getElementById("p_name").value,
+    description: document.getElementById("p_desc").value,
+    price: document.getElementById("p_price").value,
+    image: document.getElementById("p_img").value
   });
-
-  alert("Added");
 
 }
 
@@ -191,7 +183,7 @@ db.collection("products").onSnapshot(snapshot => {
       <div class="product">
         <b>${p.name}</b><br>
         ${p.description}<br>
-        <b>${p.price} ₸</b>
+        ${p.price} ₸
       </div>
     `;
 
