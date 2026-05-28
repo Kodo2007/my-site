@@ -2,11 +2,12 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>SenetCCD</title>
 
 <style>
 body{
-  font-family:Arial;
+  font-family: Arial;
   background:#0b1220;
   color:white;
   margin:0;
@@ -69,7 +70,6 @@ button{
     <p id="userInfo"></p>
   </div>
 
-  <!-- ADMIN -->
   <div class="card" id="adminPanel" style="display:none;">
     <h2>🛠 Admin Panel</h2>
 
@@ -95,14 +95,15 @@ button{
 
 <script>
 
-/* 🔥 FIREBASE CONFIG (вставь свой если нужно) */
+/* FIREBASE CONFIG */
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyB4ve7DRWKeRjSH-ivXM4MEOcnjkjXHBOg",
+  authDomain: "senet-ccd1.firebaseapp.com",
+  projectId: "senet-ccd1",
+  storageBucket: "senet-ccd1.firebasestorage.app",
+  messagingSenderId: "762088815919",
+  appId: "1:762088815919:web:b46085b9d318049e1635da",
+  measurementId: "G-5J7BDDKD6V"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -110,7 +111,7 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-/* 👑 ADMIN EMAIL */
+/* ADMIN EMAIL */
 const ADMIN_EMAIL = "imanalyzh@gmail.com";
 
 /* AUTH STATE */
@@ -125,7 +126,7 @@ auth.onAuthStateChanged(user => {
       document.getElementById("adminPanel").style.display = "block";
     }
 
-  }else{
+  } else {
 
     document.getElementById("status").innerText = "Not logged in";
     document.getElementById("userInfo").innerText = "";
@@ -137,20 +138,18 @@ auth.onAuthStateChanged(user => {
 
 /* REGISTER */
 function register(){
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  auth.createUserWithEmailAndPassword(email,password)
-  .catch(e => alert(e.message));
+  auth.createUserWithEmailAndPassword(
+    email.value,
+    password.value
+  ).catch(e => alert(e.message));
 }
 
 /* LOGIN */
 function login(){
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  auth.signInWithEmailAndPassword(email,password)
-  .catch(e => alert(e.message));
+  auth.signInWithEmailAndPassword(
+    email.value,
+    password.value
+  ).catch(e => alert(e.message));
 }
 
 /* LOGOUT */
@@ -162,10 +161,10 @@ function logout(){
 function addProduct(){
 
   db.collection("products").add({
-    name: document.getElementById("p_name").value,
-    description: document.getElementById("p_desc").value,
-    price: document.getElementById("p_price").value,
-    image: document.getElementById("p_img").value
+    name: p_name.value,
+    description: p_desc.value,
+    price: p_price.value,
+    image: p_img.value
   });
 
 }
@@ -189,7 +188,7 @@ db.collection("products").onSnapshot(snapshot => {
 
   });
 
-  document.getElementById("products").innerHTML = html;
+  products.innerHTML = html;
 
 });
 
