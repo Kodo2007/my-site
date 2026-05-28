@@ -6,11 +6,7 @@
 <title>SenetCCD</title>
 
 <style>
-body 
-  <div style="background:red;color:white;padding:10px;text-align:center;">
-TEST DESIGN LOADED
-</div>
-{
+body{
   margin:0;
   font-family:Arial;
   background:linear-gradient(135deg,#0b1220,#111b33);
@@ -102,14 +98,13 @@ button{
 
 <script>
 
-/* FIREBASE CONFIG */
 const firebaseConfig = {
-  apiKey: "AIzaSyB4ve7DRWKeRjSH-ivXM4MEOcnjkjXHBOg",
-  authDomain: "senet-ccd1.firebaseapp.com",
-  projectId: "senet-ccd1",
-  storageBucket: "senet-ccd1.firebasestorage.app",
-  messagingSenderId: "762088815919",
-  appId: "1:762088815919:web:b46085b9d318049e1635da"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_ID",
+  appId: "YOUR_APP_ID"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -123,7 +118,6 @@ const ADMIN_EMAIL = "imanalyzh@gmail.com";
 auth.onAuthStateChanged(user => {
 
   if(user){
-
     status.innerText = "Logged in";
     userInfo.innerText = user.email;
 
@@ -132,51 +126,45 @@ auth.onAuthStateChanged(user => {
     }
 
   } else {
-
     status.innerText = "Not logged in";
     userInfo.innerText = "";
     adminPanel.style.display = "none";
-
   }
 
 });
 
-/* AUTH FUNCTIONS */
-function register(){
-  auth.createUserWithEmailAndPassword(email.value,password.value)
-  .catch(e => alert(e.message));
-}
-
+/* LOGIN */
 function login(){
   auth.signInWithEmailAndPassword(email.value,password.value)
   .catch(e => alert(e.message));
 }
 
+/* REGISTER */
+function register(){
+  auth.createUserWithEmailAndPassword(email.value,password.value)
+  .catch(e => alert(e.message));
+}
+
+/* LOGOUT */
 function logout(){
   auth.signOut();
 }
 
 /* ADD PRODUCT */
 function addProduct(){
-
   db.collection("products").add({
     name:p_name.value,
     description:p_desc.value,
     price:p_price.value,
     image:p_img.value
   });
-
 }
 
-/* LOAD */
+/* LOAD PRODUCTS */
 db.collection("products").onSnapshot(snap=>{
-
   let html="";
-
   snap.forEach(doc=>{
-
     let p=doc.data();
-
     html+=`
       <div class="product">
         <b>${p.name}</b><br>
@@ -184,11 +172,8 @@ db.collection("products").onSnapshot(snap=>{
         ${p.price} ₸
       </div>
     `;
-
   });
-
   products.innerHTML=html;
-
 });
 
 </script>
