@@ -7,10 +7,10 @@
 
 <style>
 body{
-  font-family: Arial;
-  background:#0b1220;
-  color:white;
   margin:0;
+  font-family:Arial;
+  background:linear-gradient(135deg,#0b1220,#111b33);
+  color:white;
 }
 
 .container{
@@ -20,18 +20,21 @@ body{
 }
 
 .card{
-  background:#151f36;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.1);
   padding:15px;
   border-radius:12px;
   margin-top:15px;
+  backdrop-filter:blur(10px);
 }
 
 input{
   width:100%;
   padding:10px;
   margin-top:10px;
-  border-radius:8px;
   border:none;
+  border-radius:8px;
+  outline:none;
 }
 
 button{
@@ -40,14 +43,14 @@ button{
   margin-top:10px;
   border:none;
   border-radius:8px;
-  background:#6d28d9;
+  background:linear-gradient(135deg,#6d28d9,#2563eb);
   color:white;
   cursor:pointer;
 }
 
 .product{
   padding:10px;
-  border-bottom:1px solid #333;
+  border-bottom:1px solid rgba(255,255,255,0.1);
 }
 </style>
 </head>
@@ -71,7 +74,7 @@ button{
   </div>
 
   <div class="card" id="adminPanel" style="display:none;">
-    <h2>🛠 Admin Panel</h2>
+    <h2>Admin Panel</h2>
 
     <input id="p_name" placeholder="Name">
     <input id="p_desc" placeholder="Description">
@@ -102,8 +105,7 @@ const firebaseConfig = {
   projectId: "senet-ccd1",
   storageBucket: "senet-ccd1.firebasestorage.app",
   messagingSenderId: "762088815919",
-  appId: "1:762088815919:web:b46085b9d318049e1635da",
-  measurementId: "G-5J7BDDKD6V"
+  appId: "1:762088815919:web:b46085b9d318049e1635da"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -111,48 +113,41 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-/* ADMIN EMAIL */
 const ADMIN_EMAIL = "imanalyzh@gmail.com";
 
-/* AUTH STATE */
+/* AUTH */
 auth.onAuthStateChanged(user => {
 
   if(user){
 
-    document.getElementById("status").innerText = "Logged in";
-    document.getElementById("userInfo").innerText = user.email;
+    status.innerText = "Logged in";
+    userInfo.innerText = user.email;
 
     if(user.email === ADMIN_EMAIL){
-      document.getElementById("adminPanel").style.display = "block";
+      adminPanel.style.display = "block";
     }
 
   } else {
 
-    document.getElementById("status").innerText = "Not logged in";
-    document.getElementById("userInfo").innerText = "";
-    document.getElementById("adminPanel").style.display = "none";
+    status.innerText = "Not logged in";
+    userInfo.innerText = "";
+    adminPanel.style.display = "none";
 
   }
 
 });
 
-/* REGISTER */
+/* AUTH FUNCTIONS */
 function register(){
-  auth.createUserWithEmailAndPassword(
-    email.value,
-    password.value
-  ).catch(e => alert(e.message));
+  auth.createUserWithEmailAndPassword(email.value,password.value)
+  .catch(e => alert(e.message));
 }
 
-/* LOGIN */
 function login(){
-  auth.signInWithEmailAndPassword(
-    email.value,
-    password.value
-  ).catch(e => alert(e.message));
+  auth.signInWithEmailAndPassword(email.value,password.value)
+  .catch(e => alert(e.message));
 }
 
-/* LOGOUT */
 function logout(){
   auth.signOut();
 }
@@ -161,24 +156,24 @@ function logout(){
 function addProduct(){
 
   db.collection("products").add({
-    name: p_name.value,
-    description: p_desc.value,
-    price: p_price.value,
-    image: p_img.value
+    name:p_name.value,
+    description:p_desc.value,
+    price:p_price.value,
+    image:p_img.value
   });
 
 }
 
-/* LOAD PRODUCTS */
-db.collection("products").onSnapshot(snapshot => {
+/* LOAD */
+db.collection("products").onSnapshot(snap=>{
 
-  let html = "";
+  let html="";
 
-  snapshot.forEach(doc => {
+  snap.forEach(doc=>{
 
-    let p = doc.data();
+    let p=doc.data();
 
-    html += `
+    html+=`
       <div class="product">
         <b>${p.name}</b><br>
         ${p.description}<br>
@@ -188,7 +183,7 @@ db.collection("products").onSnapshot(snapshot => {
 
   });
 
-  products.innerHTML = html;
+  products.innerHTML=html;
 
 });
 
