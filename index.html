@@ -9,7 +9,7 @@
 body{
   margin:0;
   font-family:Arial;
-  background:linear-gradient(135deg,#0b1220,#111b33);
+  background:#0b1220;
   color:white;
 }
 
@@ -20,12 +20,10 @@ body{
 }
 
 .card{
-  background:rgba(255,255,255,0.06);
-  border:1px solid rgba(255,255,255,0.1);
+  background:#151f36;
   padding:15px;
   border-radius:12px;
   margin-top:15px;
-  backdrop-filter:blur(10px);
 }
 
 input{
@@ -34,7 +32,6 @@ input{
   margin-top:10px;
   border:none;
   border-radius:8px;
-  outline:none;
 }
 
 button{
@@ -43,14 +40,13 @@ button{
   margin-top:10px;
   border:none;
   border-radius:8px;
-  background:linear-gradient(135deg,#6d28d9,#2563eb);
+  background:#6d28d9;
   color:white;
-  cursor:pointer;
 }
 
 .product{
   padding:10px;
-  border-bottom:1px solid rgba(255,255,255,0.1);
+  border-bottom:1px solid #333;
 }
 </style>
 </head>
@@ -65,8 +61,8 @@ button{
     <input id="email" placeholder="Email">
     <input id="password" type="password" placeholder="Password">
 
-    <button onclick="register()">Register</button>
     <button onclick="login()">Login</button>
+    <button onclick="register()">Register</button>
     <button onclick="logout()">Logout</button>
 
     <p id="status">Not logged in</p>
@@ -74,14 +70,13 @@ button{
   </div>
 
   <div class="card" id="adminPanel" style="display:none;">
-    <h2>Admin Panel</h2>
+    <h2>Admin</h2>
 
     <input id="p_name" placeholder="Name">
     <input id="p_desc" placeholder="Description">
     <input id="p_price" placeholder="Price">
-    <input id="p_img" placeholder="Image URL">
 
-    <button onclick="addProduct()">Add Product</button>
+    <button onclick="addProduct()">Add</button>
   </div>
 
   <div class="card">
@@ -114,7 +109,7 @@ const db = firebase.firestore();
 
 const ADMIN_EMAIL = "imanalyzh@gmail.com";
 
-/* AUTH */
+/* AUTH STATE */
 auth.onAuthStateChanged(user => {
 
   if(user){
@@ -155,8 +150,7 @@ function addProduct(){
   db.collection("products").add({
     name:p_name.value,
     description:p_desc.value,
-    price:p_price.value,
-    image:p_img.value
+    price:p_price.value
   });
 }
 
